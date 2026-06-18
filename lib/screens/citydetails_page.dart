@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:primeiroaplicativo/widget/hour_card_citydetails.dart';
+import 'package:primeiroaplicativo/widget/info_card_citydetails.dart';
 
 class CityDetailsPage extends StatefulWidget {
   final String cityName;
@@ -77,11 +79,31 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    _hourCard('9h', '26°', false),
-                    _hourCard('10h', '29°', false),
-                    _hourCard('12h', '32°', true),
-                    _hourCard('13h', '31°', false),
-                    _hourCard('14h', '28°', false),
+                    HourCardCitydetails(
+                      hour: '9h',
+                      temp: '26°',
+                      selected: false,
+                    ),
+                    HourCardCitydetails(
+                      hour: '10h',
+                      temp: '29°',
+                      selected: false,
+                    ),
+                    HourCardCitydetails(
+                      hour: '12h',
+                      temp: '32°',
+                      selected: true,
+                    ),
+                    HourCardCitydetails(
+                      hour: '13h',
+                      temp: '31°',
+                      selected: false,
+                    ),
+                    HourCardCitydetails(
+                      hour: '14h',
+                      temp: '28°',
+                      selected: false,
+                    ),
                   ],
                 ),
               ),
@@ -94,76 +116,16 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                 mainAxisSpacing: 12,
                 childAspectRatio: 2,
                 children: [
-                  _infoCard('Sensação', '33°C'),
-                  _infoCard('Índice UV', 'Alto'),
-                  _infoCard('Pressão', '1012hPa'),
-                  _infoCard('Visib.', '10 km'),
-                  _infoCard('Umidade', '72%'),
-                  _infoCard('Vento', '17.39 km/h'),
+                  InfoCardCitydetails(label: 'Sensação', value: '33°C'),
+                  InfoCardCitydetails(label: 'Índice UV', value: 'Alto'),
+                  InfoCardCitydetails(label: 'Pressão', value: '1012hPa'),
+                  InfoCardCitydetails(label: 'Visib.', value: '10 km'),
+                  InfoCardCitydetails(label: 'Umidade', value: '72%'),
+                  InfoCardCitydetails(label: 'Vento', value: '17.39 km/h'),
                 ],
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _hourCard(String hour, String temp, bool selected) {
-    return SizedBox(
-      width: 70,
-      height: 70,
-      child: Card(
-        color: selected ? Theme.of(context).colorScheme.primaryContainer : null,
-        margin: EdgeInsets.only(right: 8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              hour,
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              temp,
-              style: GoogleFonts.inter(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _infoCard(String label, String value) {
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              value,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ),
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:google_fonts/google_fonts.dart";
+import 'package:primeiroaplicativo/db/warning_dao.dart';
+import 'package:primeiroaplicativo/domain/warning.dart';
 
 class StormWarningPage extends StatefulWidget {
   const StormWarningPage({super.key});
@@ -9,11 +11,27 @@ class StormWarningPage extends StatefulWidget {
 }
 
 class _StormWarningPageState extends State<StormWarningPage> {
+  List<Warning> listWarnings = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // É necessário pois o initState não permite parar a tela (uso do await)
+    loadData();
+  }
+
+  // Carregar os dados do Banco de Dados
+  Future<void> loadData() async {
+    listWarnings = await WarningDao().listWarnings();
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: ListView(
+        body: Column(
           children: [
             Text(
               'Alertas Climáticos',
@@ -22,20 +40,12 @@ class _StormWarningPageState extends State<StormWarningPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            _buildContainer(
-              'Tempestade Severa',
-              'Ventos de até 90km/h previstos para essa tarde. Evite áreas abertas.',
-              Colors.red,
-            ),
-            _buildContainer(
-              'Alto Índice UV',
-              'UV entre 8-10 amanhã. Use protetor solar e evite sol entre 10h-16h.',
-              Colors.yellow,
-            ),
-            _buildContainer(
-              'Melhora no fim de semana',
-              'Sábado e domingo com sol e baixa umidade. Ótimo para atividades ao ar livre.',
-              Colors.green,
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: listWarnings.length,
+              itemBuilder: (context, i) {
+                return _buildContainer(warning: listWarnings[i]);
+              },
             ),
           ],
         ),
@@ -43,13 +53,19 @@ class _StormWarningPageState extends State<StormWarningPage> {
     );
   }
 
-  Widget _buildContainer(String title, String subtitle, Color alertColor) {
+  Widget _buildContainer({required Warning warning}) {
     final colorScheme = Theme.of(context).colorScheme;
+    Color color = switch (warning.level) {
+      1 => Colors.green,
+      2 => Colors.yellow,
+      3 => Colors.red,
+      _ => Colors.transparent,
+    };
 
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: alertColor,
+        color: color,
       ),
       margin: EdgeInsets.all(12),
       padding: EdgeInsets.only(left: 7),
@@ -62,13 +78,13 @@ class _StormWarningPageState extends State<StormWarningPage> {
         child: Column(
           children: [
             Text(
-              title,
+              warning.title,
               style: GoogleFonts.inter(
                 fontSize: 25,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Text(subtitle, style: GoogleFonts.inter(fontSize: 18)),
+            Text(warning.description, style: GoogleFonts.inter(fontSize: 18)),
           ],
         ),
       ),
