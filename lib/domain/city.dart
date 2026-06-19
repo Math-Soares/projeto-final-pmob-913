@@ -13,6 +13,7 @@ class City {
   late int feelsLike;
   late double pressure;
   late double visibility;
+  late bool isMyLocation;
 
   City({
     required this.name,
@@ -29,6 +30,7 @@ class City {
     required this.feelsLike,
     required this.pressure,
     required this.visibility,
+    required this.isMyLocation,
   });
 
   City.fromJson(Map<String, dynamic> json) {
@@ -46,5 +48,6 @@ class City {
     feelsLike = json['feelsLike'] as int;
     pressure = json['pressure'] as double;
     visibility = json['visibility'] as double;
+    isMyLocation = (json['isMyLocation'] as int) != 0;
   }
 }

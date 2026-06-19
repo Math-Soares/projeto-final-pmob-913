@@ -20,21 +20,22 @@ class DBHelper {
 
   Future<void> onCreateDB(Database db, int version) async {
     String sql = '''CREATE TABLE CITY (
-        id         INTEGER PRIMARY KEY AUTOINCREMENT,
-        name       TEXT    NOT NULL,
-        state      TEXT    NOT NULL,
-        favorite   INTEGER NOT NULL CHECK (favorite IN (0, 1)),
-        degrees    INTEGER NOT NULL,
-        min        INTEGER NOT NULL,
-        max        INTEGER NOT NULL,
-        uv         INTEGER NOT NULL,
-        pre        INTEGER NOT NULL,
-        condition  TEXT    NOT NULL,
-        humidity   INTEGER NOT NULL,
-        wind       REAL    NOT NULL,
-        feelsLike  INTEGER NOT NULL,
-        pressure   REAL    NOT NULL,
-        visibility REAL    NOT NULL
+        id             INTEGER PRIMARY KEY AUTOINCREMENT,
+        name           TEXT    NOT NULL,
+        state          TEXT    NOT NULL,
+        favorite       INTEGER NOT NULL CHECK (favorite IN (0, 1)),
+        degrees        INTEGER NOT NULL,
+        min            INTEGER NOT NULL,
+        max            INTEGER NOT NULL,
+        uv             INTEGER NOT NULL,
+        pre            INTEGER NOT NULL,
+        condition      TEXT    NOT NULL,
+        humidity       INTEGER NOT NULL,
+        wind           REAL    NOT NULL,
+        feelsLike      INTEGER NOT NULL,
+        pressure       REAL    NOT NULL,
+        visibility     REAL    NOT NULL,
+        isMyLocation   INTEGER NOT NULL CHECK (isMyLocation IN (0, 1))
       );''';
     await db.execute(sql);
 
@@ -47,27 +48,31 @@ class DBHelper {
     await db.execute(sql);
 
     sql =
-        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility) VALUES ('Maceió', 'AL', 1, 32, 28, 35, 8, 20, 'Parcialmente nublado', 78, 17.5, 33, 1012.0, 10.0);";
+    "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('Arapiraca', 'AL', 1, 32, 28, 35, 8, 20, 'Ensolarado', 78, 17.5, 33, 1012.0, 10.0, 1);";
     await db.execute(sql);
 
     sql =
-        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility) VALUES ('São Paulo', 'SP', 1, 22, 15, 26, 5, 10, 'Nublado', 80, 12.0, 22, 1016.0, 9.0);";
+        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('Maceió', 'AL', 1, 32, 28, 35, 8, 20, 'Parcialmente nublado', 78, 17.5, 33, 1012.0, 10.0, 0);";
     await db.execute(sql);
 
     sql =
-        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility) VALUES ('Rio de Janeiro', 'RJ', 1, 28, 22, 32, 7, 0, 'Ensolarado', 70, 15.0, 30, 1012.0, 10.0);";
+        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('São Paulo', 'SP', 1, 22, 15, 26, 5, 10, 'Nublado', 80, 12.0, 22, 1016.0, 9.0, 0);";
     await db.execute(sql);
 
     sql =
-        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility) VALUES ('Fortaleza', 'CE', 0, 30, 26, 32, 9, 40, 'Chuva passageira', 75, 22.0, 34, 1010.0, 10.0);";
+        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('Rio de Janeiro', 'RJ', 1, 28, 22, 32, 7, 0, 'Ensolarado', 70, 15.0, 30, 1012.0, 10.0, 0);";
     await db.execute(sql);
 
     sql =
-        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility) VALUES ('Brasília', 'DF', 0, 25, 18, 28, 8, 0, 'Céu limpo', 45, 10.0, 25, 1014.0, 10.0);";
+        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('Fortaleza', 'CE', 0, 30, 26, 32, 9, 40, 'Chuva passageira', 75, 22.0, 34, 1010.0, 10.0, 0);";
     await db.execute(sql);
 
     sql =
-        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility) VALUES ('Salvador', 'BA', 0, 29, 24, 31, 8, 30, 'Parcialmente nublado', 78, 18.0, 32, 1011.0, 10.0);";
+        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('Brasília', 'DF', 0, 25, 18, 28, 8, 0, 'Céu limpo', 45, 10.0, 25, 1014.0, 10.0, 0);";
+    await db.execute(sql);
+
+    sql =
+        "INSERT INTO CITY (name, state, favorite, degrees, min, max, uv, pre, condition, humidity, wind, feelsLike, pressure, visibility, isMyLocation) VALUES ('Salvador', 'BA', 0, 29, 24, 31, 8, 30, 'Parcialmente nublado', 78, 18.0, 32, 1011.0, 10.0, 0);";
     await db.execute(sql);
 
     sql =

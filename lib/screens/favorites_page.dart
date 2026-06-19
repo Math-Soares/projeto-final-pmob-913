@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:primeiroaplicativo/db/city_dao.dart';
+import 'package:primeiroaplicativo/domain/city.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -9,6 +11,22 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
+  List<City> listFavoritesCitys = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // É necessário pois o initState não permite parar a tela (uso do await)
+    loadData();
+  }
+
+  // Carregar os dados do Banco de Dados
+  Future<void> loadData() async {
+    listFavoritesCitys = await CityDao().listFavoritesCitys();
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,22 +44,21 @@ class _FavoritesPageState extends State<FavoritesPage> {
                 ),
               ),
             ),
-            _cidadeFavoritaCard(
-              cidade: 'Arapiraca, AL',
-              clima: 'Ensolarado',
-              temperatura: '32°',
-              isLocalizacaoAtual: true,
+
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: listFavoritesCitys.length,
+              itemBuilder: (context, i) {
+                return _cidadeFavoritaCard(
+                  cidade:
+                      '${listFavoritesCitys[i].name}, ${listFavoritesCitys[i].state}',
+                  clima: listFavoritesCitys[i].condition,
+                  temperatura: '${listFavoritesCitys[i].degrees}°',
+                  isLocalizacaoAtual: listFavoritesCitys[i].isMyLocation,
+                );
+              },
             ),
-            _cidadeFavoritaCard(
-              cidade: 'Maceió, AL',
-              clima: 'Nublado',
-              temperatura: '29°',
-            ),
-            _cidadeFavoritaCard(
-              cidade: 'São Paulo, SP',
-              clima: 'Chuva',
-              temperatura: '22°',
-            ),
+
             _adicionarCidadeCard(),
           ],
         ),

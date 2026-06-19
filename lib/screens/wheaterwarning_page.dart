@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import "package:google_fonts/google_fonts.dart";
 import 'package:primeiroaplicativo/db/warning_dao.dart';
 import 'package:primeiroaplicativo/domain/warning.dart';
+import 'package:primeiroaplicativo/widget/build_container_warning.dart';
 
 class StormWarningPage extends StatefulWidget {
   const StormWarningPage({super.key});
@@ -44,47 +45,9 @@ class _StormWarningPageState extends State<StormWarningPage> {
               shrinkWrap: true,
               itemCount: listWarnings.length,
               itemBuilder: (context, i) {
-                return _buildContainer(warning: listWarnings[i]);
+                return BuildContainerWarning(warning: listWarnings[i]);
               },
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContainer({required Warning warning}) {
-    final colorScheme = Theme.of(context).colorScheme;
-    Color color = switch (warning.level) {
-      1 => Colors.green,
-      2 => Colors.yellow,
-      3 => Colors.red,
-      _ => Colors.transparent,
-    };
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: color,
-      ),
-      margin: EdgeInsets.all(12),
-      padding: EdgeInsets.only(left: 7),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: colorScheme.surfaceContainerHigh,
-        ),
-        padding: EdgeInsets.all(14),
-        child: Column(
-          children: [
-            Text(
-              warning.title,
-              style: GoogleFonts.inter(
-                fontSize: 25,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(warning.description, style: GoogleFonts.inter(fontSize: 18)),
           ],
         ),
       ),
