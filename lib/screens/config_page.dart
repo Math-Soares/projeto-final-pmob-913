@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:primeiroaplicativo/db/shared_prefs.dart';
 import 'package:primeiroaplicativo/widget/build_card_config.dart';
 import 'package:primeiroaplicativo/widget/build_list_tile_config.dart';
 import 'package:primeiroaplicativo/widget/build_segment_config.dart';
 import 'package:primeiroaplicativo/widget/section_title_config.dart';
+
+import 'login_page.dart';
 
 class ConfigPage extends StatefulWidget {
   final bool isDark;
@@ -20,6 +23,7 @@ class ConfigPage extends StatefulWidget {
 }
 
 class _ConfigPageState extends State<ConfigPage> {
+  SharedPrefs prefs = SharedPrefs();
   bool alertas = false;
   bool previsao = false;
   bool gps = false;
@@ -90,6 +94,44 @@ class _ConfigPageState extends State<ConfigPage> {
               subtitle: 'Localização precisa',
               value: gps,
               onChanged: (v) => setState(() => gps = v),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              prefs.setUserStatus(false);
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return LoginPage();
+                  },
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              disabledBackgroundColor: Colors.red.withValues(alpha: 0.9),
+              disabledForegroundColor: Colors.white,
+              elevation: 4,
+              shadowColor: Colors.black.withValues(alpha: 0.2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Center(
+                child: Text(
+                  "Logout",
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
           ),
         ],

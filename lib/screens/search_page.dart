@@ -12,20 +12,12 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<City> listCitys = [];
+  late Future<List<City>> listCities;
 
   @override
   void initState() {
     super.initState();
-    // É necessário pois o initState não permite parar a tela (uso do await)
-    loadData();
-  }
-
-  // Carregar os dados do Banco de Dados
-  Future<void> loadData() async {
-    listCitys = await CityDao().listCitys();
-    await Future.delayed(Duration(seconds: 2));
-    setState(() {});
+    listCities = CityDao().listCitys();
   }
 
   @override
@@ -43,6 +35,7 @@ class _SearchPageState extends State<SearchPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
+            SizedBox(height: 5),
             Card(
               child: Row(
                 children: [
@@ -67,18 +60,32 @@ class _SearchPageState extends State<SearchPage> {
 
             // Provisório
             SizedBox(height: 15),
-            // --
 
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: listCitys.length,
-              itemBuilder: (context, i) {
-                return CityCardSearch(name: listCitys[i].name);
+            // --
+            FutureBuilder(
+              future: listCities,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<City> list = snapshot.requireData;
+                  return buildListView(list);
+                }
+
+                return CircularProgressIndicator(color: Colors.blue);
               },
             ),
           ],
         ),
       ),
+    );
+  }
+
+  ListView buildListView(List<City> listCities) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: listCities.length,
+      itemBuilder: (context, i) {
+        return CityCardSearch(name: listCities[i].name);
+      },
     );
   }
 }

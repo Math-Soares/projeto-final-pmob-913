@@ -12,20 +12,12 @@ class StormWarningPage extends StatefulWidget {
 }
 
 class _StormWarningPageState extends State<StormWarningPage> {
-  List<Warning> listWarnings = [];
+  late Future<List<Warning>> listWarnings;
 
   @override
   void initState() {
     super.initState();
-    // É necessário pois o initState não permite parar a tela (uso do await)
-    loadData();
-  }
-
-  // Carregar os dados do Banco de Dados
-  Future<void> loadData() async {
-    listWarnings = await WarningDao().listWarnings();
-    await Future.delayed(Duration(seconds: 2));
-    setState(() {});
+    listWarnings = WarningDao().listWarnings();
   }
 
   @override
@@ -41,16 +33,31 @@ class _StormWarningPageState extends State<StormWarningPage> {
                 fontWeight: FontWeight.w700,
               ),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: listWarnings.length,
-              itemBuilder: (context, i) {
-                return BuildContainerWarning(warning: listWarnings[i]);
+
+            FutureBuilder(
+              future: listWarnings,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<Warning> list = snapshot.requireData;
+                  return buildListView(list);
+                }
+
+                return CircularProgressIndicator(color: Colors.blue);
               },
             ),
           ],
         ),
       ),
+    );
+  }
+
+  ListView buildListView(listWarnings) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: listWarnings.length,
+      itemBuilder: (context, i) {
+        return BuildContainerWarning(warning: listWarnings[i]);
+      },
     );
   }
 }

@@ -11,20 +11,12 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  List<City> listFavoritesCitys = [];
+  late Future<List<City>> listFavoritesCities;
 
   @override
   void initState() {
     super.initState();
-    // É necessário pois o initState não permite parar a tela (uso do await)
-    loadData();
-  }
-
-  // Carregar os dados do Banco de Dados
-  Future<void> loadData() async {
-    listFavoritesCitys = await CityDao().listFavoritesCitys();
-    await Future.delayed(Duration(seconds: 2));
-    setState(() {});
+    listFavoritesCities = CityDao().listFavoritesCitys();
   }
 
   @override
@@ -45,17 +37,15 @@ class _FavoritesPageState extends State<FavoritesPage> {
               ),
             ),
 
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: listFavoritesCitys.length,
-              itemBuilder: (context, i) {
-                return _cidadeFavoritaCard(
-                  cidade:
-                      '${listFavoritesCitys[i].name}, ${listFavoritesCitys[i].state}',
-                  clima: listFavoritesCitys[i].condition,
-                  temperatura: '${listFavoritesCitys[i].degrees}°',
-                  isLocalizacaoAtual: listFavoritesCitys[i].isMyLocation,
-                );
+            FutureBuilder(
+              future: listFavoritesCities,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<City> list = snapshot.requireData;
+                  return buildListView(list);
+                }
+
+                return CircularProgressIndicator(color: Colors.blue);
               },
             ),
 
@@ -63,6 +53,22 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ],
         ),
       ),
+    );
+  }
+
+  ListView buildListView(listFavoritesCities) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: listFavoritesCities.length,
+      itemBuilder: (context, i) {
+        return _cidadeFavoritaCard(
+          cidade:
+              '${listFavoritesCities[i].name}, ${listFavoritesCities[i].state}',
+          clima: listFavoritesCities[i].condition,
+          temperatura: '${listFavoritesCities[i].degrees}°',
+          isLocalizacaoAtual: listFavoritesCities[i].isMyLocation,
+        );
+      },
     );
   }
 

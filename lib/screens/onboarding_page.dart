@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'main_aux.dart';
+
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
 
@@ -65,7 +67,12 @@ class _OnboardingPage extends State<OnboardingPage> {
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () => {},
+                onPressed: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MainAux()),
+                  )
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
