@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:primeiroaplicativo/screens/search_page.dart';
-import 'package:primeiroaplicativo/screens/weekprevious_page.dart';
-import 'package:primeiroaplicativo/screens/wheaterwarning_page.dart';
+import 'package:albedo/screens/search_page.dart';
+import 'package:albedo/screens/weekprevious_page.dart';
+import 'package:albedo/screens/wheaterwarning_page.dart';
 
 import '../db/shared_prefs.dart';
 import 'config_page.dart';
@@ -30,11 +29,11 @@ class _MainAuxState extends State<MainAux> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      themeMode: _themeMode,
-      home: Scaffold(
+    return Theme(
+      data: _themeMode == ThemeMode.dark
+          ? ThemeData.dark()
+          : ThemeData.light(),
+      child: Scaffold(
         bottomNavigationBar: NavigationBar(
           selectedIndex: _selectedIndex,
           indicatorColor: Colors.transparent,
@@ -76,20 +75,18 @@ class _MainAuxState extends State<MainAux> {
             ),
           ],
         ),
-        body: IndexedStack(
-          index: _selectedIndex,
-          children: [
-            HomePage(),
-            SearchPage(),
-            WeekpreviousPage(),
-            FavoritesPage(),
-            StormWarningPage(),
-            ConfigPage(
-              isDark: _themeMode == ThemeMode.dark,
-              onThemeChanged: _onThemeChanged,
-            ),
-          ],
-        ),
+        body:
+            [
+              HomePage(),
+              SearchPage(),
+              WeekpreviousPage(),
+              FavoritesPage(),
+              StormWarningPage(),
+              ConfigPage(
+                isDark: _themeMode == ThemeMode.dark,
+                onThemeChanged: _onThemeChanged,
+              ),
+            ][_selectedIndex],
       ),
     );
   }

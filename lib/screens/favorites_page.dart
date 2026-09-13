@@ -1,7 +1,8 @@
+import 'package:albedo/api/city_api.dart';
+import 'package:albedo/db/shared_prefs.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:primeiroaplicativo/db/city_dao.dart';
-import 'package:primeiroaplicativo/domain/city.dart';
+import 'package:albedo/domain/city.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -16,7 +17,32 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
-    listFavoritesCities = CityDao().listFavoritesCitys();
+    _load();
+  }
+
+  void _load() {
+    setState(() {
+      listFavoritesCities = _loadFavorites();
+    });
+  }
+
+  Future<List<City>> _loadFavorites() async {
+    List<City> favorites = [];
+
+    final keys = await SharedPrefs().getFavorites();
+    if (keys.isEmpty) return [];
+
+    for (var key in keys) {
+      final name = key.split(RegExp(r'[-,]')).first.trim();
+      try {
+        final city = await CityApi().fetchWeatherData(name);
+        if (city != null) favorites.add(city);
+      } catch (_) {
+        // ignora cidade com erro e continua as outras
+      }
+    }
+
+    return favorites;
   }
 
   @override
@@ -40,23 +66,70 @@ class _FavoritesPageState extends State<FavoritesPage> {
             FutureBuilder(
               future: listFavoritesCities,
               builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(color: Colors.blue),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: Column(
+                      children: [
+                        Text('Erro ao carregar favoritos'),
+                        SizedBox(height: 8),
+                        ElevatedButton(
+                          onPressed: _load,
+                          child: Text('Tentar novamente'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
                 if (snapshot.hasData) {
                   List<City> list = snapshot.requireData;
+                  if (list.isEmpty) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Column(
+                        children: [
+                          Icon(Icons.star_border, size: 48, color: Colors.grey),
+                          SizedBox(height: 8),
+                          Text(
+                            'Você ainda não tem favoritos',
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Busque uma cidade e toque na estrela',
+                            style: GoogleFonts.inter(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                   return buildListView(list);
                 }
 
-                return CircularProgressIndicator(color: Colors.blue);
+                return Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                );
               },
             ),
 
-            _adicionarCidadeCard(),
+            //_adicionarCidadeCard(),
           ],
         ),
       ),
     );
   }
 
-  ListView buildListView(listFavoritesCities) {
+  ListView buildListView(List<City> listFavoritesCities) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: listFavoritesCities.length,
@@ -118,7 +191,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  Widget _adicionarCidadeCard() {
+  Widget adicionarCidadeCard() {
     final colorScheme = Theme.of(context).colorScheme;
 
     return ElevatedButton(

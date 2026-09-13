@@ -1,12 +1,12 @@
+import 'package:albedo/domain/city.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:primeiroaplicativo/widget/hour_card_citydetails.dart';
-import 'package:primeiroaplicativo/widget/info_card_citydetails.dart';
+import 'package:albedo/widget/info_card_citydetails.dart';
 
 class CityDetailsPage extends StatefulWidget {
-  final String cityName;
+  final City city;
 
-  const CityDetailsPage({super.key, required this.cityName});
+  const CityDetailsPage({super.key, required this.city});
 
   @override
   State<CityDetailsPage> createState() => _CityDetailsPageState();
@@ -15,6 +15,8 @@ class CityDetailsPage extends StatefulWidget {
 class _CityDetailsPageState extends State<CityDetailsPage> {
   @override
   Widget build(BuildContext context) {
+    final uvTexto = _uvTexto(widget.city.uv);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -35,7 +37,7 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
               SizedBox(height: 12),
 
               Text(
-                widget.cityName,
+                '${widget.city.name} - ${widget.city.state}',
                 style: GoogleFonts.inter(
                   fontSize: 28,
                   fontWeight: FontWeight.w700,
@@ -49,7 +51,7 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                     Icon(Icons.cloud, size: 60),
                     SizedBox(height: 8),
                     Text(
-                      '32°C',
+                      '${widget.city.degrees}°C',
                       style: GoogleFonts.inter(
                         fontSize: 56,
                         fontWeight: FontWeight.w700,
@@ -57,7 +59,7 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                     ),
                     SizedBox(height: 4),
                     Text(
-                      'Nublado · Max 34°  Min 23°',
+                      '${widget.city.condition} · Max ${widget.city.max}°  Min ${widget.city.min}°',
                       style: GoogleFonts.inter(fontSize: 13),
                     ),
                   ],
@@ -65,6 +67,7 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
               ),
               SizedBox(height: 24),
 
+              /*
               Text(
                 'Por hora',
                 style: GoogleFonts.inter(
@@ -108,7 +111,7 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                 ),
               ),
               SizedBox(height: 20),
-
+              */
               GridView.count(
                 crossAxisCount: 2,
                 shrinkWrap: true,
@@ -116,12 +119,27 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                 mainAxisSpacing: 12,
                 childAspectRatio: 2,
                 children: [
-                  InfoCardCitydetails(label: 'Sensação', value: '33°C'),
-                  InfoCardCitydetails(label: 'Índice UV', value: 'Alto'),
-                  InfoCardCitydetails(label: 'Pressão', value: '1012hPa'),
-                  InfoCardCitydetails(label: 'Visib.', value: '10 km'),
-                  InfoCardCitydetails(label: 'Umidade', value: '72%'),
-                  InfoCardCitydetails(label: 'Vento', value: '17.39 km/h'),
+                  InfoCardCitydetails(
+                    label: 'Sensação',
+                    value: '${widget.city.feelsLike}°C',
+                  ),
+                  InfoCardCitydetails(label: 'Índice UV', value: uvTexto),
+                  InfoCardCitydetails(
+                    label: 'Pressão',
+                    value: '${widget.city.pressure}hPa',
+                  ),
+                  InfoCardCitydetails(
+                    label: 'Visib.',
+                    value: '${widget.city.visibility} km',
+                  ),
+                  InfoCardCitydetails(
+                    label: 'Umidade',
+                    value: '${widget.city.humidity}%',
+                  ),
+                  InfoCardCitydetails(
+                    label: 'Vento',
+                    value: '${widget.city.wind} km/h',
+                  ),
                 ],
               ),
             ],
@@ -129,5 +147,13 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
         ),
       ),
     );
+  }
+
+  String _uvTexto(int uv) {
+    if (uv >= 11) return 'Extremo';
+    if (uv >= 8) return 'Muito Alto';
+    if (uv >= 6) return 'Alto';
+    if (uv >= 3) return 'Moderado';
+    return 'Baixo';
   }
 }

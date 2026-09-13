@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:primeiroaplicativo/screens/main_aux.dart';
-import 'package:primeiroaplicativo/screens/onboarding_page.dart';
+import 'package:albedo/screens/main_aux.dart';
+import 'package:albedo/screens/onboarding_page.dart';
 
 import '../db/shared_prefs.dart';
 import 'login_page.dart';
@@ -21,31 +21,42 @@ class _SplashPageState extends State<SplashPage> {
     checkStatus();
   }
 
-  checkStatus() async {
-    bool status = await prefs.getUserStatus();
-    await Future.delayed(Duration(seconds: 3));
+  void checkStatus() async {
+    try {
+      final onboardingSeen = await prefs.getOnBoardSeen();
+      bool status = await prefs.getUserStatus();
+      await Future.delayed(Duration(seconds: 3));
 
-    if(status) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            if(prefs.getOnBoardSeen() == true) {
-              return MainAux();
-            } else {
-              return OnboardingPage();
-            }
-          }
-        )
-      );
-    } else {
-      Navigator.pushReplacement(
+      if (!mounted) return;
+
+      if (status) {
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) {
-                return LoginPage();
+            builder: (context) {
+              if (onboardingSeen == true) {
+                return MainAux();
+              } else {
+                return OnboardingPage();
               }
-          )
+            },
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return LoginPage();
+            },
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
       );
     }
   }
@@ -53,11 +64,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(
-          color: Colors.blue,
-        ),
-      ),
+      body: Center(child: CircularProgressIndicator(color: Colors.blue)),
     );
   }
 }

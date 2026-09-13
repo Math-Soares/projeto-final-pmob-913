@@ -1,8 +1,11 @@
+import 'package:albedo/api/cities_api.dart';
+import 'package:albedo/api/city_api.dart';
+import 'package:albedo/domain/city_summary.dart';
+import 'package:albedo/screens/citydetails_page.dart';
+import 'package:albedo/widget/section_title_search.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:primeiroaplicativo/db/city_dao.dart';
-import 'package:primeiroaplicativo/domain/city.dart';
-import 'package:primeiroaplicativo/widget/city_card_search.dart';
+import 'package:albedo/widget/city_card_search.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -12,12 +15,19 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  late Future<List<City>> listCities;
+  String _query = '';
+  late Future<List<CitySummary>> listCities;
 
   @override
   void initState() {
     super.initState();
-    listCities = CityDao().listCitys();
+    listCities = CitiesApi().listCities();
+  }
+
+  void _reloadCities() {
+    setState(() {
+      listCities = CitiesApi().listCities();
+    });
   }
 
   @override
@@ -49,29 +59,83 @@ class _SearchPageState extends State<SearchPage> {
                         hintText: 'Digite o nome da cidade',
                         border: InputBorder.none,
                       ),
+                      onChanged: (v) {
+                        setState(() {
+                          _query = v.trim().toLowerCase();
+                        });
+                      },
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (v) => _searchGlobal(v.trim()),
                     ),
                   ),
                 ],
               ),
             ),
 
-            //SectionTitleSearch(text: 'Recentes'),
-            //SectionTitleSearch(text: 'Populares'),
+            SectionTitleSearch(
+              text: _query.isEmpty ? 'Populares' : 'Resultados',
+            ),
 
-            // Provisório
-            SizedBox(height: 15),
+            Expanded(
+              child: FutureBuilder(
+                future: listCities,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(color: Colors.blue),
+                    );
+                  }
 
-            // --
-            FutureBuilder(
-              future: listCities,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<City> list = snapshot.requireData;
-                  return buildListView(list);
-                }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Erro ao carregar cidades'),
+                          SizedBox(height: 8),
+                          ElevatedButton(
+                            onPressed: _reloadCities,
+                            child: Text('Tentar novamente'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
 
-                return CircularProgressIndicator(color: Colors.blue);
-              },
+                  if (snapshot.hasData) {
+                    List<CitySummary> list = snapshot.requireData;
+
+                    if (_query.isNotEmpty) {
+                      list =
+                          list
+                              .where(
+                                (c) => c.name.toLowerCase().contains(_query),
+                              )
+                              .toList();
+                    }
+
+                    if (list.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Nenhuma cidade para "$_query"'),
+                            Text(
+                              'Verifique a grafia ou pressione Enter para buscar',
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return buildListView(list);
+                  }
+
+                  return Center(
+                    child: CircularProgressIndicator(color: Colors.blue),
+                  );
+                },
+              ),
             ),
           ],
         ),
@@ -79,12 +143,34 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  ListView buildListView(List<City> listCities) {
+  Future<void> _searchGlobal(String name) async {
+    if (name.isEmpty) return;
+
+    final city = await CityApi().fetchWeatherData(name);
+
+    if (!mounted) return;
+
+    if (city == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Cidade "$name" não encontrada')));
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CityDetailsPage(city: city)),
+    );
+  }
+
+  ListView buildListView(List<CitySummary> listCities) {
     return ListView.builder(
-      shrinkWrap: true,
       itemCount: listCities.length,
       itemBuilder: (context, i) {
-        return CityCardSearch(name: listCities[i].name);
+        return CityCardSearch(
+          name: listCities[i].name,
+          state: listCities[i].state,
+        );
       },
     );
   }

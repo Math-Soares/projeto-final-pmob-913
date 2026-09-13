@@ -8,16 +8,16 @@ class BuildContainerWeekprevious extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: colorScheme.surfaceContainerHigh,
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(8),
+        child: Center(
+          child: Text(
+            text,
+            style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w500),
+          ),
+        ),
       ),
-      margin: EdgeInsets.all(12),
-      padding: EdgeInsets.all(14),
-      child: Text(text, style: GoogleFonts.inter(fontSize: 25)),
     );
   }
 }

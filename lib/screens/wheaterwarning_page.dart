@@ -1,8 +1,8 @@
+import 'package:albedo/api/warning_api.dart';
 import 'package:flutter/material.dart';
 import "package:google_fonts/google_fonts.dart";
-import 'package:primeiroaplicativo/db/warning_dao.dart';
-import 'package:primeiroaplicativo/domain/warning.dart';
-import 'package:primeiroaplicativo/widget/build_container_warning.dart';
+import 'package:albedo/domain/warning.dart';
+import 'package:albedo/widget/build_container_warning.dart';
 
 class StormWarningPage extends StatefulWidget {
   const StormWarningPage({super.key});
@@ -17,41 +17,49 @@ class _StormWarningPageState extends State<StormWarningPage> {
   @override
   void initState() {
     super.initState();
-    listWarnings = WarningDao().listWarnings();
+    listWarnings = WarningApi().listWarnings();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            Text(
-              'Alertas Climáticos',
-              style: GoogleFonts.inter(
-                fontSize: 35,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+      child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        children: [
+          Text(
+            'Alertas Climáticos',
+            style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w700),
+          ),
 
-            FutureBuilder(
-              future: listWarnings,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<Warning> list = snapshot.requireData;
-                  return buildListView(list);
-                }
+          SizedBox(height: 10),
 
-                return CircularProgressIndicator(color: Colors.blue);
-              },
-            ),
-          ],
-        ),
+          FutureBuilder(
+            future: listWarnings,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(color: Colors.blue),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return Text('Erro ao carregar alertas');
+              }
+
+              if (snapshot.hasData) {
+                List<Warning> list = snapshot.requireData;
+                return buildListView(list);
+              }
+
+              return CircularProgressIndicator(color: Colors.blue);
+            },
+          ),
+        ],
       ),
     );
   }
 
-  ListView buildListView(listWarnings) {
+  ListView buildListView(List<Warning> listWarnings) {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: listWarnings.length,

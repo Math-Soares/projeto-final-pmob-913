@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:primeiroaplicativo/screens/main_aux.dart';
+import 'package:albedo/screens/main_aux.dart';
 
 import '../db/shared_prefs.dart';
 import '../db/user_dao.dart';
@@ -16,10 +16,13 @@ class _LoginPageState extends State<LoginPage> {
   SharedPrefs prefs = SharedPrefs();
   TextEditingController userController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool _loading = false;
 
   @override
-  void initState() {
-    super.initState();
+  void dispose() {
+    userController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,31 +43,27 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 24),
               Card(
-                child: Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 12),
-                    child: TextField(
-                      controller: userController,
-                      decoration: InputDecoration(
-                        hintText: 'Usuário',
-                        border: InputBorder.none,
-                      ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: TextField(
+                    controller: userController,
+                    decoration: InputDecoration(
+                      hintText: 'Usuário',
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
               ),
               SizedBox(height: 4),
               Card(
-                child: Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 12),
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Senha',
-                        border: InputBorder.none,
-                      ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      hintText: 'Senha',
+                      border: InputBorder.none,
                     ),
                   ),
                 ),
@@ -77,11 +76,24 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: onPressed,
-                child: Text(
-                  'Entrar',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16),
-                ),
+                onPressed: _loading ? null : onPressed,
+                child: _loading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : Text(
+                        'Entrar',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -90,7 +102,15 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Cadastro indisponível. Use um usuário da API Fake.',
+                      ),
+                    ),
+                  );
+                },
                 child: Text(
                   'Cadastrar Usuário',
                   style: TextStyle(
@@ -107,29 +127,53 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  onPressed() async {
-    String username = userController.text;
-    String password = passwordController.text;
+  void onPressed() async {
+    String username = userController.text.trim();
+    String password = passwordController.text.trim();
 
-    bool isAuth = await UserDao().login(username, password);
-
-    if (isAuth) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            if(prefs.getOnBoardSeen() == true) {
-              return MainAux();
-            } else {
-              return OnboardingPage();
-            }
-          },
-        )
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Preencha usuário e senha')),
       );
+      return;
+    }
 
-      prefs.setUserStatus(true);
-    } else {
-      print('Usuario e/ou Senha incorreto');
+    setState(() => _loading = true);
+
+    try {
+      final onboardingSeen = await prefs.getOnBoardSeen();
+      bool isAuth = await UserDao().login(username, password);
+
+      if (!mounted) return;
+
+      if (isAuth) {
+        await prefs.setUserStatus(true);
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              if (onboardingSeen == true) {
+                return MainAux();
+              } else {
+                return OnboardingPage();
+              }
+            },
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Usuário e/ou senha incorretos')),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro de conexão. Tente novamente.')),
+      );
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 }

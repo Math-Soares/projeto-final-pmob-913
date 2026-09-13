@@ -1,4 +1,4 @@
-import 'package:primeiroaplicativo/domain/city.dart';
+import 'package:albedo/domain/city.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'db_helper.dart';

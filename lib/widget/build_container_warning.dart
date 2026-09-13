@@ -1,45 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:primeiroaplicativo/domain/warning.dart';
+import 'package:albedo/domain/warning.dart';
 
 class BuildContainerWarning extends StatelessWidget {
   final Warning warning;
+
   const BuildContainerWarning({super.key, required this.warning});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    Color color = switch (warning.level) {
-      1 => Colors.green,
-      2 => Colors.yellow,
-      3 => Colors.red,
-      _ => Colors.transparent,
-    };
+    Color color = Colors.transparent;
 
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: color,
-      ),
-      margin: EdgeInsets.all(12),
-      padding: EdgeInsets.only(left: 7),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: colorScheme.surfaceContainerHigh,
-        ),
-        padding: EdgeInsets.all(14),
-        child: Column(
-          children: [
-            Text(
+    if (warning.level == 1) {
+      color = Colors.green;
+    } else if (warning.level == 2) {
+      color = Colors.yellow;
+    } else if (warning.level == 3) {
+      color = Colors.red;
+    }
+
+    return Card(
+      color: color,
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Card(
+        margin: EdgeInsets.only(left: 5),
+        child: Padding(
+          padding: EdgeInsets.all(5),
+          child: ListTile(
+            title: Text(
               warning.title,
               style: GoogleFonts.inter(
-                fontSize: 25,
+                fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Text(warning.description, style: GoogleFonts.inter(fontSize: 18)),
-          ],
+            subtitle: Text(
+              warning.description,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ),
       ),
     );

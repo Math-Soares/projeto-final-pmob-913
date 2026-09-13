@@ -1,4 +1,4 @@
-import 'package:primeiroaplicativo/domain/warning.dart';
+import 'package:albedo/domain/warning.dart';
 import 'package:sqflite/sqflite.dart';
 
 import 'db_helper.dart';

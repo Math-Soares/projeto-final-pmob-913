@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../db/shared_prefs.dart';
 import 'main_aux.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -11,6 +12,15 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPage extends State<OnboardingPage> {
+  Future<void> _goToMain() async {
+    await SharedPrefs().setOnBoardSeen(true);
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => MainAux()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -55,7 +65,7 @@ class _OnboardingPage extends State<OnboardingPage> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => {},
+                onPressed: _goToMain,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -67,12 +77,7 @@ class _OnboardingPage extends State<OnboardingPage> {
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () => {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainAux()),
-                  )
-                },
+                onPressed: _goToMain,
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
