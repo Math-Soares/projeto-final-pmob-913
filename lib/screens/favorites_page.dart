@@ -21,9 +21,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   void _load() {
-    setState(() {
       listFavoritesCities = _loadFavorites();
-    });
+
   }
 
   Future<List<City>> _loadFavorites() async {
@@ -38,6 +37,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
         final city = await CityApi().fetchWeatherData(name);
         if (city != null) favorites.add(city);
       } catch (_) {
+
         // ignora cidade com erro e continua as outras
       }
     }

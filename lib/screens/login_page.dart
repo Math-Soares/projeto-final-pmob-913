@@ -143,6 +143,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final onboardingSeen = await prefs.getOnBoardSeen();
       bool isAuth = await UserDao().login(username, password);
+      /*
+      Future.wait([
+
+      ]);
+       */
 
       if (!mounted) return;
 
@@ -154,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              if (onboardingSeen == true) {
+              if (onboardingSeen) {
                 return MainAux();
               } else {
                 return OnboardingPage();

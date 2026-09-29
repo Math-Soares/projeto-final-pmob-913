@@ -33,6 +33,15 @@ class City {
     required this.isMyLocation,
   });
 
+  String get uvTexto {
+    if (uv >= 11) return 'Extremo';
+    if (uv >= 8) return 'Muito Alto';
+    if (uv >= 6) return 'Alto';
+    if (uv >= 3) return 'Moderado';
+
+    return 'Baixo';
+  }
+
   City.fromJson(Map<String, dynamic> json) {
     name = (json['name']).toString();
     state = (json['state']).toString();

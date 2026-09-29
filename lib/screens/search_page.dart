@@ -106,12 +106,7 @@ class _SearchPageState extends State<SearchPage> {
                     List<CitySummary> list = snapshot.requireData;
 
                     if (_query.isNotEmpty) {
-                      list =
-                          list
-                              .where(
-                                (c) => c.name.toLowerCase().contains(_query),
-                              )
-                              .toList();
+                      list = list.where((c) => c.name.toLowerCase().contains(_query)).toList();
                     }
 
                     if (list.isEmpty) {

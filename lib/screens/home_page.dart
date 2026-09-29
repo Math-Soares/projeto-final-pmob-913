@@ -29,9 +29,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void reload() {
-    setState(() {
+
       futureCity = loadCurrentCity();
-    });
+
   }
 
   @override
@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
                         style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 4),
-                      Text(uvTexto(cidade.uv), style: GoogleFonts.inter()),
+                      Text(cidade.uvTexto, style: GoogleFonts.inter()),
                     ],
                   ),
                 ),
@@ -303,14 +303,5 @@ class _HomePageState extends State<HomePage> {
         */
       ],
     );
-  }
-
-  String uvTexto(int uv) {
-    if (uv >= 11) return 'Extremo';
-    if (uv >= 8) return 'Muito Alto';
-    if (uv >= 6) return 'Alto';
-    if (uv >= 3) return 'Moderado';
-
-    return 'Baixo';
   }
 }
