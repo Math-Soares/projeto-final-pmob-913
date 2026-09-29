@@ -1,5 +1,7 @@
+import 'package:albedo/api/weekly_forecast_api.dart';
 import 'package:flutter/material.dart';
-import "package:google_fonts/google_fonts.dart";
+import 'package:google_fonts/google_fonts.dart';
+import 'package:albedo/domain/weekly_forecast.dart';
 import 'package:albedo/widget/build_container_weekprevious.dart';
 
 class WeekpreviousPage extends StatefulWidget {
@@ -10,6 +12,14 @@ class WeekpreviousPage extends StatefulWidget {
 }
 
 class _WeekpreviousPageState extends State<WeekpreviousPage> {
+  late Future<List<WeeklyForecast>> listWeeklyForecast;
+
+  @override
+  void initState() {
+    super.initState();
+    listWeeklyForecast = WeeklyForecastApi().listWeeklyForecast();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -18,20 +28,46 @@ class _WeekpreviousPageState extends State<WeekpreviousPage> {
         children: [
           Text(
             'Previsão da semana',
-            style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w700),
+            style: GoogleFonts.inter(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+            ),
           ),
 
           SizedBox(height: 10),
 
-          BuildContainerWeekprevious(text: 'Dom.: Máx. 30°/Min. 18°'),
-          BuildContainerWeekprevious(text: 'Seg.: Máx. 30°/Min. 18°'),
-          BuildContainerWeekprevious(text: 'Ter.: Máx. 30°/Min. 18°'),
-          BuildContainerWeekprevious(text: 'Qua.: Máx. 30°/Min. 18°'),
-          BuildContainerWeekprevious(text: 'Qui.: Máx. 30°/Min. 18°'),
-          BuildContainerWeekprevious(text: 'Sex.: Máx. 30°/Min. 18°'),
-          BuildContainerWeekprevious(text: 'Sáb.: Máx. 30°/Min. 18°'),
+          FutureBuilder(
+            future: listWeeklyForecast,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.blue,
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Erro ao carregar previsão.');
+              } else if (!snapshot.hasData) {
+                return Text('A lista de previsões de dados está vázia.');
+              } else {
+                return buildListView(snapshot.requireData);
+              }
+            },
+          ),
         ],
       ),
+    );
+  }
+
+  ListView buildListView(List<WeeklyForecast> listWeeklyForecast) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: listWeeklyForecast.length,
+      itemBuilder: (context, i) {
+        return BuildContainerWeekprevious(
+          text: '${listWeeklyForecast[i].day}: Máx. ${listWeeklyForecast[i].max}° / Min. ${listWeeklyForecast[i].min}°',
+        );
+      },
     );
   }
 }
