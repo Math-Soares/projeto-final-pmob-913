@@ -15,8 +15,6 @@ class CityDetailsPage extends StatefulWidget {
 class _CityDetailsPageState extends State<CityDetailsPage> {
   @override
   Widget build(BuildContext context) {
-    final uvTexto = _uvTexto(widget.city.uv);
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -123,7 +121,7 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
                     label: 'Sensação',
                     value: '${widget.city.feelsLike}°C',
                   ),
-                  InfoCardCitydetails(label: 'Índice UV', value: uvTexto),
+                  InfoCardCitydetails(label: 'Índice UV', value: widget.city.uvTexto),
                   InfoCardCitydetails(
                     label: 'Pressão',
                     value: '${widget.city.pressure}hPa',
@@ -147,13 +145,5 @@ class _CityDetailsPageState extends State<CityDetailsPage> {
         ),
       ),
     );
-  }
-
-  String _uvTexto(int uv) {
-    if (uv >= 11) return 'Extremo';
-    if (uv >= 8) return 'Muito Alto';
-    if (uv >= 6) return 'Alto';
-    if (uv >= 3) return 'Moderado';
-    return 'Baixo';
   }
 }

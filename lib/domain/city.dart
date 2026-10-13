@@ -43,20 +43,20 @@ class City {
   }
 
   City.fromJson(Map<String, dynamic> json) {
-    name = (json['name']).toString();
-    state = (json['state']).toString();
+    name = json['name'].toString();
+    state = json['state'].toString();
     favorite = (json['favorite'] as int) != 0;
-    degrees = json['degrees'] as int;
-    min = json['min'] as int;
-    max = json['max'] as int;
-    uv = json['uv'] as int;
-    pre = json['pre'] as int;
-    condition = (json['condition']).toString();
-    humidity = json['humidity'] as int;
-    wind = json['wind'] as double;
-    feelsLike = json['feelsLike'] as int;
-    pressure = json['pressure'] as double;
-    visibility = json['visibility'] as double;
+    degrees = (json['degrees'] as num).toInt();
+    min = (json['min'] as num).toInt();
+    max = (json['max'] as num).toInt();
+    uv = (json['uv'] as num).toInt();
+    pre = (json['pre'] as num).toInt();
+    condition = json['condition'].toString();
+    humidity = (json['humidity'] as num).toInt();
+    wind = (json['wind'] as num).toDouble();
+    feelsLike = (json['feelsLike'] as num).toInt();
+    pressure = (json['pressure'] as num).toDouble();
+    visibility = (json['visibility'] as num).toDouble();
     isMyLocation = (json['isMyLocation'] as int) != 0;
   }
 }

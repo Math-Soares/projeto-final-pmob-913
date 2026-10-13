@@ -1,4 +1,4 @@
-package com.example.primeiroaplicativo
+package com.example.albedo
 
 import io.flutter.embedding.android.FlutterActivity
 
