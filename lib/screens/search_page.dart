@@ -1,3 +1,11 @@
+<<<<<<< Updated upstream
+=======
+import 'package:albedo/db/cities_dao.dart';
+import 'package:albedo/api/city_api.dart';
+import 'package:albedo/domain/city_summary.dart';
+import 'package:albedo/screens/citydetails_page.dart';
+import 'package:albedo/widget/section_title_search.dart';
+>>>>>>> Stashed changes
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:primeiroaplicativo/screens/citydetails_page.dart';
@@ -10,6 +18,24 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+<<<<<<< Updated upstream
+=======
+  String _query = '';
+  late Future<List<CitySummary>> listCities;
+
+  @override
+  void initState() {
+    super.initState();
+    listCities = CityDao().listCities();
+  }
+
+  void _reloadCities() {
+    setState(() {
+      listCities = CityDao().listCities();
+    });
+  }
+
+>>>>>>> Stashed changes
   @override
   Widget build(BuildContext context) {
     return SafeArea(
